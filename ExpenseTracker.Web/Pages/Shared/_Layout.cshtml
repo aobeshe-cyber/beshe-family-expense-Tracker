@@ -1,0 +1,292 @@
+﻿@{
+    var currentPage = ViewContext.RouteData.Values["page"]?.ToString() ?? "/Index";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Beshe Family</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        html, body {
+            min-height: 100%;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+            body.page-gradient-bg {
+                background: radial-gradient(circle at 12% 15%, rgba(99, 102, 241, 0.28), transparent 42%), radial-gradient(circle at 88% 18%, rgba(236, 72, 153, 0.26), transparent 40%), radial-gradient(circle at 78% 85%, rgba(251, 146, 60, 0.25), transparent 45%), linear-gradient(135deg, #e0e7ff 0%, #fae8ff 48%, #ffedd5 100%);
+                background-attachment: fixed;
+            }
+
+                body.page-gradient-bg.dark-mode {
+                    background: radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.25), transparent 45%), radial-gradient(circle at 85% 20%, rgba(236, 72, 153, 0.22), transparent 45%), linear-gradient(135deg, #090d16 0%, #131126 52%, #1b1024 100%);
+                    color: #f1f5f9;
+                }
+
+        .beshe-navbar {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 6px 24px rgba(30, 27, 75, 0.08);
+        }
+
+        body.dark-mode .beshe-navbar {
+            background: rgba(15, 23, 42, 0.85);
+            border-bottom-color: rgba(148, 163, 184, 0.16);
+        }
+
+        .brand-logo {
+            background: linear-gradient(125deg, #4338ca, #7e22ce, #db2777);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-pill-link {
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.92rem;
+            border-radius: 999px;
+            padding: 0.45rem 0.95rem !important;
+            transition: all 0.15s ease;
+        }
+
+            .nav-pill-link:hover {
+                color: #4338ca;
+                background: rgba(99, 102, 241, 0.1);
+            }
+
+        body.dark-mode .nav-pill-link {
+            color: #cbd5e1;
+        }
+
+            body.dark-mode .nav-pill-link:hover {
+                color: #ffffff;
+                background: rgba(129, 140, 248, 0.18);
+            }
+
+        .nav-pill-link.active {
+            background: linear-gradient(90deg, #4f46e5, #ec4899);
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.28);
+        }
+
+        .tracker-shell {
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            border-radius: 24px;
+            box-shadow: 0 18px 45px rgba(30, 27, 75, 0.12);
+        }
+
+        body.dark-mode .tracker-shell {
+            background: rgba(15, 23, 42, 0.78);
+            border-color: rgba(148, 163, 184, 0.18);
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+        }
+
+        .hero-banner {
+            background: linear-gradient(125deg, #4338ca 0%, #7e22ce 52%, #db2777 100%);
+            color: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 12px 28px rgba(126, 34, 206, 0.28);
+        }
+
+        .total-pill {
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 14px;
+        }
+
+        .modern-card {
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            background: rgba(255, 255, 255, 0.96);
+        }
+
+        body.dark-mode .modern-card {
+            background: rgba(30, 41, 59, 0.92);
+            border-color: rgba(148, 163, 184, 0.16);
+            color: #f1f5f9;
+        }
+
+        body.dark-mode .section-heading {
+            color: #e2e8f0 !important;
+        }
+
+        body.dark-mode .text-muted,
+        body.dark-mode .text-secondary {
+            color: #94a3b8 !important;
+        }
+
+        body.dark-mode .text-dark {
+            color: #f8fafc !important;
+        }
+
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background-color: #0f172a;
+            border-color: #334155;
+            color: #f8fafc;
+        }
+
+        body.dark-mode .table {
+            color: #e2e8f0;
+            --bs-table-hover-bg: rgba(148, 163, 184, 0.08);
+            --bs-table-border-color: rgba(148, 163, 184, 0.15);
+        }
+
+        .btn-pop {
+            background: linear-gradient(90deg, #4f46e5, #ec4899);
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+            .btn-pop:hover {
+                color: #fff;
+                transform: translateY(-1px);
+                box-shadow: 0 6px 16px rgba(236, 72, 153, 0.32);
+            }
+
+        .cat-badge {
+            background: #eef2ff;
+            color: #4338ca;
+            border: 1px solid #c7d2fe;
+            font-weight: 600;
+            border-radius: 999px;
+            padding: 0.32em 0.72em;
+            font-size: 0.8rem;
+        }
+
+        body.dark-mode .cat-badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: #c7d2fe;
+            border-color: rgba(129, 140, 248, 0.35);
+        }
+
+        .amount-chip {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+            font-weight: 700;
+            border-radius: 8px;
+            padding: 0.25rem 0.6rem;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        body.dark-mode .amount-chip {
+            background: rgba(16, 185, 129, 0.16);
+            color: #6ee7b7;
+            border-color: rgba(52, 211, 153, 0.35);
+        }
+
+        .budget-progress-bar {
+            background: linear-gradient(90deg, #4f46e5, #ec4899);
+        }
+
+        .theme-btn {
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 0.38rem 0.85rem;
+            border: 1px solid #cbd5e1;
+            background: rgba(255, 255, 255, 0.7);
+            color: #334155;
+        }
+
+        body.dark-mode .theme-btn {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: #475569;
+            color: #f1f5f9;
+        }
+    </style>
+</head>
+<body class="page-gradient-bg d-flex flex-column min-vh-100">
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg beshe-navbar py-2">
+            <div class="container" style="max-width: 980px;">
+                <a class="navbar-brand d-flex align-items-center gap-2" asp-page="/Index">
+                    <span class="badge rounded-pill bg-warning text-dark fw-bold">BF</span>
+                    <span class="brand-logo fs-5">Beshe Family</span>
+                </a>
+
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#besheNav" aria-controls="besheNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="besheNav">
+                    <ul class="navbar-nav mx-auto gap-1 my-2 my-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link nav-pill-link @(currentPage == "/Index" ? "active" : "")" asp-page="/Index">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-pill-link @(currentPage == "/Analytics" ? "active" : "")" asp-page="/Analytics">Analytics &amp; Insights</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-pill-link @(currentPage == "/Goals" ? "active" : "")" asp-page="/Goals">Savings Goals</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-pill-link @(currentPage == "/Family" ? "active" : "")" asp-page="/Family">Family Members</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-pill-link @(currentPage == "/About" ? "active" : "")" asp-page="/About">About &amp; Contact</a>
+                        </li>
+                    </ul>
+
+                    <div class="d-flex align-items-center">
+                        <button type="button" id="DarkModeToggle" class="btn theme-btn" onclick="toggleDarkMode()">
+                            🌙 Dark Mode
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main" class="flex-grow-1">
+        @RenderBody()
+    </main>
+
+    <footer class="py-3 text-center small text-muted">
+        <div class="container">
+            Beshe Family Expense Tracker &bull; Built by Avuya Beshe
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function applyTheme(isDark) {
+            const btn = document.getElementById("DarkModeToggle");
+            if (isDark) {
+                document.body.classList.add("dark-mode");
+                if (btn) btn.textContent = "☀️ Light Mode";
+            } else {
+                document.body.classList.remove("dark-mode");
+                if (btn) btn.textContent = "🌙 Dark Mode";
+            }
+        }
+
+        function toggleDarkMode() {
+            const nextState = !document.body.classList.contains("dark-mode");
+            localStorage.setItem("beshe-dark-mode", nextState ? "1" : "0");
+            applyTheme(nextState);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const savedDark = localStorage.getItem("beshe-dark-mode") === "1";
+            applyTheme(savedDark);
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

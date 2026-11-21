@@ -1,0 +1,118 @@
+﻿@page
+@model GoalsModel
+@{
+    ViewData["Title"] = "Savings Goals";
+}
+
+<div class="container py-4" style="max-width: 960px;">
+    <div class="tracker-shell p-4 p-md-5">
+        <div class="hero-banner p-4 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <span class="badge rounded-pill bg-warning text-dark fw-semibold mb-2">Family Targets</span>
+                <h1 class="h2 fw-bold mb-1">Beshe Family Savings Goals</h1>
+                <p class="mb-0 text-white-50">Save together for holidays, games, school trips, and family treats</p>
+            </div>
+            <div class="total-pill px-4 py-3 text-md-end">
+                <div class="small text-uppercase fw-semibold opacity-75">Total Saved</div>
+                <div class="fs-3 fw-bold">@Model.FormatRand(Model.TotalSaved)</div>
+                <div class="small opacity-75">of @Model.FormatRand(Model.TotalTargets) target</div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger border-0 shadow-sm rounded-3" role="alert">
+                @Model.ErrorMessage
+            </div>
+        }
+
+        <!-- Create a New Goal -->
+        <div class="card modern-card mb-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3 section-heading" style="color: #312e81;">Create a New Savings Goal</h5>
+                <form method="post" asp-page-handler="Create">
+                    <div class="row g-3">
+                        <div class="col-md-2">
+                            <label asp-for="Emoji" class="form-label fw-semibold small text-secondary">Icon</label>
+                            <select asp-for="Emoji" class="form-select form-select-lg fs-6">
+                                <option value="🏖️">🏖️ Trip</option>
+                                <option value="🎮">🎮 Game</option>
+                                <option value="🎒">🎒 School</option>
+                                <option value="🔥">🔥 Braai</option>
+                                <option value="👟">👟 Drip</option>
+                                <option value="🎯">🎯 Goal</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Name" class="form-label fw-semibold small text-secondary">Goal Name</label>
+                            <input asp-for="Name" class="form-control form-control-lg fs-6" placeholder="e.g., December Holiday or PS5 Game" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="TargetAmount" class="form-label fw-semibold small text-secondary">Target Amount (R)</label>
+                            <input asp-for="TargetAmount" type="number" step="10" min="1" class="form-control form-control-lg fs-6" placeholder="2500.00" />
+                        </div>
+                    </div>
+
+                    <div class="mt-3 text-end">
+                        <button type="submit" class="btn btn-pop px-4 py-2">+ Create Goal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Goals Grid -->
+        @if (Model.Goals.Count == 0)
+        {
+            <div class="card modern-card p-5 text-center">
+                <h5 class="fw-bold section-heading">No savings goals yet</h5>
+                <p class="text-muted mb-0">Create your first goal above so the whole family can track progress together.</p>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var goal in Model.Goals)
+                {
+                    bool reached = goal.SavedAmount >= goal.TargetAmount;
+                    <div class="col-md-6">
+                        <div class="card modern-card h-100">
+                            <div class="card-body p-4 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="fs-3">@goal.Emoji</span>
+                                            <div>
+                                                <h5 class="fw-bold mb-0 section-heading">@goal.Name</h5>
+                                                <small class="text-muted">Target: @Model.FormatRand(goal.TargetAmount)</small>
+                                            </div>
+                                        </div>
+                                        <form method="post" asp-page-handler="Delete" asp-route-id="@goal.Id">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Remove goal">✕</button>
+                                        </form>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between small fw-semibold mt-3 mb-1">
+                                        <span style="color: #047857;">Saved: @Model.FormatRand(goal.SavedAmount)</span>
+                                        <span>@(reached ? "🎉 Goal Reached!" : $"{goal.ProgressPercent}%")</span>
+                                    </div>
+
+                                    <div class="progress mb-3" style="height: 12px; border-radius: 999px; background-color: #e2e8f0;">
+                                        <div class="progress-bar budget-progress-bar" role="progressbar"
+                                             style="width: @goal.ProgressPercent.ToString(System.Globalization.CultureInfo.InvariantCulture)%;"></div>
+                                    </div>
+                                </div>
+
+                                <form method="post" asp-page-handler="Contribute" asp-route-id="@goal.Id" class="d-flex gap-2 mt-2">
+                                    <input asp-for="ContributionAmount" type="number" step="5" min="1" value="50" class="form-control form-control-sm" placeholder="Amount (R)" />
+                                    <button type="submit" class="btn btn-sm btn-pop px-3 text-nowrap">+ Add Funds</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

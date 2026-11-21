@@ -1,0 +1,82 @@
+﻿@page
+@model FamilyModel
+@{
+    ViewData["Title"] = "Family Members";
+}
+
+<div class="container py-4" style="max-width: 960px;">
+    <div class="tracker-shell p-4 p-md-5">
+        <div class="hero-banner p-4 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <span class="badge rounded-pill bg-warning text-dark fw-semibold mb-2">Household Hub</span>
+                <h1 class="h2 fw-bold mb-1">Beshe Family Members</h1>
+                <p class="mb-0 text-white-50">Track per-person spending, allowances, and remaining balances</p>
+            </div>
+            <div class="total-pill px-4 py-3 text-md-end">
+                <div class="small text-uppercase fw-semibold opacity-75">Household Total</div>
+                <div class="fs-3 fw-bold">@Model.FormatRand(Model.FamilyTotalSpent)</div>
+            </div>
+        </div>
+
+        <!-- Add or Update Family Member Allowance -->
+        <div class="card modern-card mb-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3 section-heading" style="color: #312e81;">Add Member or Update Monthly Allowance</h5>
+                <form method="post" asp-page-handler="UpdateAllowance">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-5">
+                            <label asp-for="MemberName" class="form-label fw-semibold small text-secondary">Family Member Name</label>
+                            <input asp-for="MemberName" class="form-control form-control-lg fs-6" placeholder="e.g., Me, Mom, Dad, Brother, Gogo" />
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="AllowanceAmount" class="form-label fw-semibold small text-secondary">Monthly Allowance (R)</label>
+                            <input asp-for="AllowanceAmount" type="number" step="50" min="0" class="form-control form-control-lg fs-6" placeholder="1500.00" />
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-pop w-100 py-2">Save Member</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Per-Person Cards -->
+        <div class="row g-4">
+            @foreach (var member in Model.Members)
+            {
+                bool overBudget = member.Remaining < 0;
+                <div class="col-md-6">
+                    <div class="card modern-card h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+                                         style="width: 46px; height: 46px; background: linear-gradient(135deg, #4f46e5, #ec4899); font-size: 1.1rem;">
+                                        @member.Name.Substring(0, 1).ToUpperInvariant()
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold mb-0 section-heading">@member.Name</h5>
+                                        <small class="text-muted">@member.ItemCount logged @(member.ItemCount == 1 ? "item" : "items")</small>
+                                    </div>
+                                </div>
+                                <span class="amount-chip">@Model.FormatRand(member.TotalSpent)</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span class="text-muted">Allowance: <strong>@Model.FormatRand(member.Allowance)</strong></span>
+                                <span class="fw-semibold @(overBudget ? "text-danger" : "text-success")">
+                                    @(overBudget ? $"Over by {Model.FormatRand(Math.Abs(member.Remaining))}" : $"{Model.FormatRand(member.Remaining)} left")
+                                </span>
+                            </div>
+
+                            <div class="progress" style="height: 10px; border-radius: 999px; background-color: #e2e8f0;">
+                                <div class="progress-bar @(overBudget ? "bg-danger" : "budget-progress-bar")" role="progressbar"
+                                     style="width: @member.UsagePercent.ToString(System.Globalization.CultureInfo.InvariantCulture)%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,154 @@
+﻿@page
+@model AnalyticsModel
+@{
+    ViewData["Title"] = "Analytics & Insights";
+}
+
+<div class="container py-4" style="max-width: 960px;">
+    <div class="tracker-shell p-4 p-md-5">
+        <div class="hero-banner p-4 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <span class="badge rounded-pill bg-warning text-dark fw-semibold mb-2">Smart Insights</span>
+                <h1 class="h2 fw-bold mb-1">Analytics &amp; Spending Insights</h1>
+                <p class="mb-0 text-white-50">Visual breakdown of where the Beshe family Rands are going</p>
+            </div>
+            <div class="total-pill px-4 py-3 text-md-end">
+                <div class="small text-uppercase fw-semibold opacity-75">Avg Daily Spend</div>
+                <div class="fs-3 fw-bold">@Model.FormatRand(Model.AverageDailySpend)</div>
+            </div>
+        </div>
+
+        <!-- KPI Summary Strip -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card modern-card h-100">
+                    <div class="card-body p-3">
+                        <div class="small text-muted fw-semibold text-uppercase">Top Category</div>
+                        <div class="fs-5 fw-bold mt-1" style="color: #4f46e5;">@Model.TopCategoryName</div>
+                        <small class="text-muted">@Model.FormatRand(Model.TopCategoryAmount) spent</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card modern-card h-100">
+                    <div class="card-body p-3">
+                        <div class="small text-muted fw-semibold text-uppercase">Total Logged</div>
+                        <div class="fs-5 fw-bold mt-1" style="color: #db2777;">@Model.FormatRand(Model.TotalSpent)</div>
+                        <small class="text-muted">Across @Model.TotalTransactions item(s)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card modern-card h-100">
+                    <div class="card-body p-3">
+                        <div class="small text-muted fw-semibold text-uppercase">Daily Average</div>
+                        <div class="fs-5 fw-bold mt-1" style="color: #047857;">@Model.FormatRand(Model.AverageDailySpend)</div>
+                        <small class="text-muted">Per active spending day</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.TotalTransactions == 0)
+        {
+            <div class="card modern-card p-5 text-center">
+                <h5 class="fw-bold section-heading">No spending data to chart yet</h5>
+                <p class="text-muted mb-3">Log a few expenses on the Dashboard first and your charts will light up automatically.</p>
+                <div>
+                    <a asp-page="/Index" class="btn btn-pop px-4 py-2">Go to Dashboard</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4 mb-4">
+                <div class="col-lg-5">
+                    <div class="card modern-card h-100">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-3 section-heading" style="color: #312e81;">Spending by Category</h5>
+                            <canvas id="categoryDoughnutChart" height="240"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="card modern-card h-100">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-3 section-heading" style="color: #312e81;">Daily Spending Trend</h5>
+                            <canvas id="dailyBarChart" height="240"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card modern-card">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3 section-heading" style="color: #1e293b;">Top Categories Ranked</h5>
+                    @foreach (var item in Model.CategoryTotals)
+                    {
+                        var pct = Model.TotalSpent > 0 ? Math.Round((item.Value / Model.TotalSpent) * 100m, 1) : 0m;
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small fw-semibold mb-1">
+                                <span>@item.Key</span>
+                                <span>@Model.FormatRand(item.Value) (@pct%)</span>
+                            </div>
+                            <div class="progress" style="height: 8px; border-radius: 999px;">
+                                <div class="progress-bar budget-progress-bar" style="width: @pct.ToString(System.Globalization.CultureInfo.InvariantCulture)%;"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const catLabels = @Html.Raw(Model.CategoryLabelsJson);
+        const catValues = @Html.Raw(Model.CategoryValuesJson);
+        const dailyLabels = @Html.Raw(Model.DailyLabelsJson);
+        const dailyValues = @Html.Raw(Model.DailyValuesJson);
+
+        if (catLabels.length > 0) {
+            new Chart(document.getElementById('categoryDoughnutChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: catLabels,
+                    datasets: [{
+                        data: catValues,
+                        backgroundColor: ['#4f46e5', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#8b5cf6'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('dailyBarChart'), {
+                type: 'bar',
+                data: {
+                    labels: dailyLabels,
+                    datasets: [{
+                        label: 'Spent (R)',
+                        data: dailyValues,
+                        backgroundColor: 'rgba(124, 58, 237, 0.8)',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: { beginAtZero: true }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+    </script>
+}
