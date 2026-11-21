@@ -5,11 +5,10 @@ COPY ["Expense Tracker.csproj", "Expense Tracker/"]
 COPY ["ExpenseTracker.Web/ExpenseTracker.Web.csproj", "ExpenseTracker.Web/"]
 RUN dotnet restore "ExpenseTracker.Web/ExpenseTracker.Web.csproj"
 
-COPY . "Expense Tracker/"
-RUN mv "Expense Tracker/ExpenseTracker.Web" "ExpenseTracker.Web"
+COPY [".", "/src/Expense Tracker/"]
+RUN mv "/src/Expense Tracker/ExpenseTracker.Web" "/src/ExpenseTracker.Web"
 WORKDIR "/src/ExpenseTracker.Web"
 RUN dotnet publish "ExpenseTracker.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
-
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 ENV ASPNETCORE_URLS=http://+:8080
