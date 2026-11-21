@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".dockerignore" />
+    <File Path="Dockerfile" />
+  </Folder>
+  <Project Path="../ExpenseTracker.Web/ExpenseTracker.Web.csproj" Id="c2516d09-046f-4c3c-9973-9c9b1406a1ee" />
+  <Project Path="Expense Tracker.csproj" />
+</Solution>
